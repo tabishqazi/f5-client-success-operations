@@ -24,6 +24,7 @@ export function validateContactOutcome(value:unknown):ContactOutcomeInput{
  if(!Array.isArray(item.obligationIds)||item.obligationIds.length>50)throw new DomainError('INVALID_RANGE','Invalid obligation selection');
  const obligationIds=[...new Set(item.obligationIds.map(validateId))];
  if(obligationIds.length!==item.obligationIds.length)throw new DomainError('INVALID_RANGE','Duplicate obligation selection');
+ if(item.outcome==='rescheduled'&&!obligationIds.length)throw new DomainError('EVIDENCE_REQUIRED','Select the work being rescheduled');
  const feedbackRaw=Array.isArray(item.feedback)?item.feedback:[];
  if(feedbackRaw.length>20)throw new DomainError('INVALID_RANGE','Too many feedback records');
  const feedback=feedbackRaw.map(raw=>{

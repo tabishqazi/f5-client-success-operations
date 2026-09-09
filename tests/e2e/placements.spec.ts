@@ -2,14 +2,15 @@ import { expect, test } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 
 test('operational screens load records, fit the viewport, and keep planning language out',async({page},testInfo)=>{
- for(const path of ['/','/rules','/placements','/issues']){
+ for(const path of ['/','/clients','/rules','/placements','/issues']){
   await page.goto(path);
   if(path!=='/rules')await expect(page.getByText('Loading workspace…')).toHaveCount(0);
   if(path==='/placements')await expect(page.getByText('30 placements',{exact:true})).toBeVisible();
+  if(path==='/clients')await expect(page.getByText('12 clients',{exact:true})).toBeVisible();
   if(path==='/issues')await expect(page.getByText('Client requested replacement after repeated late submissions.',{exact:true})).toBeVisible();
   if(path==='/rules')await expect(page.getByRole('heading',{name:'Contact priority'})).toBeVisible();
   await expect(page.locator('nav a[aria-current="page"]')).toHaveCount(1);
-  expect(await page.locator('main').innerText()).not.toMatch(/\bdemo\b|synthetic|\bA0[1-8]\b/i);
+  expect(await page.locator('main').innerText()).not.toMatch(/\bdemo\b|synthetic|implementation plan|technical assessment|\bA0[1-8]\b/i);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth),path).toBe(false);
  }
  await page.goto('/placements');await expect(page.getByText('30 placements',{exact:true})).toBeVisible();

@@ -15,7 +15,7 @@ export async function getQueue(workspaceId:string,instant:string,asOf:string,sco
   const [placementCount]=await tx`select count(*)::int total from f5.placements where workspace_id=${workspaceId}`;
   const todayEnd=routineDueAt(asOf);const horizon=routineDueAt(addCalendarDays(asOf,POLICY.scheduling.forwardHorizonCalendarDays));
   const rows=await tx`select o.id,o.type,o.due_at,o.next_contact_at,o.placement_id,c.id contact_id,c.name contact_name,c.side contact_side,c.email contact_email,c.time_zone contact_zone,
-   cl.name client_name,pro.name professional_name,p.start_date,p.trial_end,p.trial_decision,
+   cl.id client_id,cl.name client_name,pro.name professional_name,p.start_date,p.trial_end,p.trial_decision,
    fr.first_requested_at,fr.response_deadline,i.severity issue_severity,e.reason escalation_reason
    from f5.obligations o join f5.contacts c on c.workspace_id=o.workspace_id and c.id=o.contact_id
    left join f5.placements p on p.workspace_id=o.workspace_id and p.id=o.placement_id
@@ -29,9 +29,9 @@ export async function getQueue(workspaceId:string,instant:string,asOf:string,sco
   const all:QueueItem[]=rows.map(row=>{
    const reason=evaluateObligation({obligationId:row.id,type:row.type as ObligationType,dueAt:new Date(row.due_at).toISOString(),asOf,trialEnd:row.trial_end,trialStart:row.start_date,trialDecision:row.trial_decision,firstRequestedAt:row.first_requested_at?new Date(row.first_requested_at).toISOString():null,responseDeadline:row.response_deadline?new Date(row.response_deadline).toISOString():null,issueSeverity:row.issue_severity,escalationReason:row.escalation_reason});
    const dueAt=new Date(row.due_at).toISOString();const nextContactAt=row.next_contact_at?new Date(row.next_contact_at).toISOString():null;
-   const scheduledAt=reason.priority==='P0'?dueAt:nextContactAt??dueAt;
+   const scheduledAt=reason.priority==='P0'||reason.priority==='P1'?dueAt:nextContactAt??dueAt;
    const contact=localContactState(instant,row.contact_zone);
-   return {obligationId:row.id,type:row.type as ObligationType,dueAt,scheduledAt,priority:reason.priority,reason:nextContactAt?`${reason.explanation} Next contact is scheduled for ${dateOnly(nextContactAt)}.`:reason.explanation,contactId:row.contact_id,contactName:row.contact_name,contactSide:row.contact_side as ContactSide,contactEmail:row.contact_email,contactZone:row.contact_zone,clientName:row.client_name??null,professionalName:row.professional_name??null,placementId:row.placement_id??null,trialEnd:row.trial_end??null,bucket:contact.bucket,localTime:contact.localTime};
+   return {obligationId:row.id,type:row.type as ObligationType,dueAt,scheduledAt,priority:reason.priority,reason:nextContactAt?`${reason.explanation} Next contact is scheduled for ${dateOnly(nextContactAt)}.`:reason.explanation,contactId:row.contact_id,contactName:row.contact_name,contactSide:row.contact_side as ContactSide,contactEmail:row.contact_email,contactZone:row.contact_zone,clientId:row.client_id??null,clientName:row.client_name??null,professionalName:row.professional_name??null,placementId:row.placement_id??null,trialEnd:row.trial_end??null,bucket:contact.bucket,localTime:contact.localTime};
   });
   const today=all.filter(item=>Temporal.Instant.compare(Temporal.Instant.from(item.scheduledAt),Temporal.Instant.from(todayEnd))<=0);
   const selected=scope==='today'?today:all.filter(item=>Temporal.Instant.compare(Temporal.Instant.from(item.scheduledAt),Temporal.Instant.from(todayEnd))>0);

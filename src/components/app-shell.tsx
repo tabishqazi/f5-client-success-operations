@@ -7,6 +7,7 @@ import { Icon } from "./icon";
 
 const navigation = [
   { href: "/", label: "Today", icon: "today" },
+  { href: "/clients", label: "Clients", icon: "clients" },
   { href: "/placements", label: "Placements", icon: "people" },
   { href: "/issues", label: "Issues", icon: "issue" },
   { href: "/rules", label: "Rules", icon: "rules" },

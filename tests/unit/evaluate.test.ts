@@ -29,7 +29,7 @@ describe('priority explanations',()=>{
 });
 
 test('grouping retains every obligation and uses the highest priority',()=>{
- const common={contactId:'c1',contactName:'Maya Chen',contactSide:'client',contactEmail:'maya@example.test',contactZone:'America/New_York',clientName:'Northstar',professionalName:'Daniel',placementId:'p1',trialEnd:'2026-09-11',bucket:'now',localTime:'Tue, 10:00 AM'} as const;
+ const common={contactId:'c1',contactName:'Maya Chen',contactSide:'client',contactEmail:'maya@example.test',contactZone:'America/New_York',clientId:'client-1',clientName:'Northstar',professionalName:'Daniel',placementId:'p1',trialEnd:'2026-09-11',bucket:'now',localTime:'Tue, 10:00 AM'} as const;
  const items:QueueItem[]=[{...common,obligationId:'o1',type:'client_feedback',dueAt:'2026-09-01T21:00:00Z',scheduledAt:'2026-09-01T21:00:00Z',priority:'P1',reason:'Feedback missing.'},{...common,obligationId:'o2',type:'client_monthly',dueAt:'2026-09-05T21:00:00Z',scheduledAt:'2026-09-05T21:00:00Z',priority:'P2',reason:'Monthly review overdue.'}];
  const [card]=groupQueue(items);expect(card?.priority).toBe('P1');expect(card?.reasons.map(r=>r.obligationId)).toEqual(['o1','o2']);expect(card?.oldestDueAt).toBe(items[0]!.dueAt);
 });

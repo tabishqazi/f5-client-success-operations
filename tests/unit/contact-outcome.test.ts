@@ -18,6 +18,12 @@ describe('contact outcome validation',()=>{
   expect(()=>validateContactOutcome({...base,outcome:'rescheduled'})).toThrow();
   expect(()=>validateContactOutcome({...base,obligationIds:[obligationId,obligationId]})).toThrow(/duplicate/i);
  });
+ test('accepts a structured follow-up date five business days from the operating date',()=>{
+  expect(validateContactOutcome({...base,outcome:'rescheduled',rescheduleDate:'2026-09-16'}).rescheduleDate).toBe('2026-09-16');
+ });
+ test('requires selected work for a rescheduled outcome',()=>{
+  expect(()=>validateContactOutcome({...base,outcome:'rescheduled',obligationIds:[],rescheduleDate:'2026-09-16'})).toThrow(/select the work/i);
+ });
  test('rejects feedback unless the contact was reached',()=>expect(()=>validateContactOutcome({...base,outcome:'no_answer',feedback:[{placementId,assessment:'satisfied',rating:5,notes:'Evidence'}]})).toThrow(/reached/i));
 });
 

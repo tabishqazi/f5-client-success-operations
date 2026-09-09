@@ -10,6 +10,7 @@ import { reconcileWorkspace } from '@/server/reconcile';
 import { getQueue } from '@/server/queue';
 import { addCalendarDays,dateInTimeZone,localDateTimeToInstant,routineDueAt,trialReviewDate } from '@/domain/clock';
 import { createIssue,recordContactOutcome,updateIssue } from '@/server/mutations';
+import { getClient, listClientsPage } from '@/server/clients';
 
 const admin=postgres(process.env.TEST_DATABASE_URL!,{max:1,onnotice:()=>{}});
 let a:Awaited<ReturnType<typeof createWorkspace>>;
@@ -56,6 +57,16 @@ describe('real PostgreSQL persistence and isolation',()=>{
   expect(new Set([...first.items,...second.items].map(item=>item.id)).size).toBe(18);
   const match=await listPlacementsPage(a.workspaceId,{search:'Daniel Reyes',page:1,pageSize:9});
   expect(match.total).toBe(1);expect(match.items[0]?.professional_name).toBe('Daniel Reyes');
+ });
+ test('client pagination searches the complete workspace and client detail rejects foreign scope',async()=>{
+  const first=await listClientsPage(a.workspaceId,{page:1,pageSize:9},'2026-09-08T14:00:00Z');
+  const second=await listClientsPage(a.workspaceId,{page:2,pageSize:9},'2026-09-08T14:00:00Z');
+  expect(first).toMatchObject({total:12,page:1,pageSize:9,totalPages:2});
+  expect(first.items).toHaveLength(9);expect(second.items).toHaveLength(3);
+  expect(new Set([...first.items,...second.items].map(item=>item.id)).size).toBe(12);
+  const match=await listClientsPage(a.workspaceId,{search:'Daniel Reyes',page:1,pageSize:9},'2026-09-08T14:00:00Z');
+  expect(match.total).toBe(1);expect(match.items[0]?.active_placements).toBeGreaterThan(0);
+  await expect(getClient(b.workspaceId,match.items[0]!.id,'2026-09-08T14:00:00Z')).rejects.toMatchObject({code:'NOT_FOUND'});
  });
  test('session survives repeated resolution and stores only a hash',async()=>{
   expect(await resolveSession(a.token)).toBe(a.workspaceId);
@@ -175,6 +186,30 @@ describe('real PostgreSQL persistence and isolation',()=>{
   await recordContactOutcome(a.workspaceId,{contactId:clientWork.contact_id,direction:'inbound',channel:'phone',outcome:'reached',notes:'Client called and completed the monthly relationship review.',obligationIds:[clientWork.id],feedback:[]},randomUUID(),'2026-09-08T14:00:00Z');
   const rows=await scoped(a.workspaceId,tx=>tx`select id,state from f5.obligations where id in ${tx([clientWork.id,professionalWork.id])}`);
   expect(rows.find(row=>row.id===clientWork.id)?.state).toBe('satisfied');expect(rows.find(row=>row.id===professionalWork.id)?.state).toBe('open');
+ });
+ test('client-only monthly contact remains visible in the complete client history',async()=>{
+  await scoped(a.workspaceId,tx=>resetWorkspace(tx,a.workspaceId,date));await reconcileWorkspace(a.workspaceId,date);
+  const [monthly]=await scoped(a.workspaceId,tx=>tx`select ob.id,ob.client_id,ob.contact_id from f5.obligations ob where ob.type='client_monthly' and ob.state='open' order by ob.due_at limit 1`);
+  if(!monthly)throw new Error('Expected client monthly work');
+  const note='Completed the client relationship review and confirmed the next monthly cadence.';
+  const result=await recordContactOutcome(a.workspaceId,{contactId:monthly.contact_id,direction:'inbound',channel:'phone',outcome:'reached',notes:note,obligationIds:[monthly.id],feedback:[]},randomUUID(),'2026-09-08T15:00:00Z');
+  const detail=await getClient(a.workspaceId,monthly.client_id,'2026-09-08T15:05:00Z');
+  expect(detail.interactions.find(interaction=>interaction.id===result.interactionId)).toMatchObject({notes:note,outcome:'reached',professionals:[]});
+  expect(detail.obligations.some(obligation=>obligation.id===monthly.id)).toBe(false);
+ });
+ test('urgent work remains in Today after a confirmed five-business-day follow-up',async()=>{
+  await scoped(a.workspaceId,tx=>resetWorkspace(tx,a.workspaceId,date));await reconcileWorkspace(a.workspaceId,date);
+  const before=await getQueue(a.workspaceId,'2026-09-08T14:00:00Z',date,'today');
+  const urgent=before.cards.find(card=>card.priority==='P1'&&card.reasons.some(reason=>reason.type==='client_feedback'));
+  if(!urgent)throw new Error('Expected urgent client feedback');
+  const reason=urgent.reasons.find(item=>item.type==='client_feedback')!;
+  await recordContactOutcome(a.workspaceId,{contactId:urgent.contactId,direction:'outbound',channel:'phone',outcome:'rescheduled',notes:'The client confirmed a follow-up in five business days.',obligationIds:[reason.obligationId],rescheduleDate:'2026-09-15',feedback:[]},randomUUID(),'2026-09-08T14:00:00Z');
+  const after=await getQueue(a.workspaceId,'2026-09-08T14:05:00Z',date,'today');
+  expect(after.cards.some(card=>card.priority==='P1'&&card.reasons.some(item=>item.obligationId===reason.obligationId))).toBe(true);
+  const [stored]=await scoped(a.workspaceId,tx=>tx`select due_at,next_contact_at from f5.obligations where id=${reason.obligationId}`);
+  if(!stored)throw new Error('Expected rescheduled obligation');
+  expect(new Date(stored.next_contact_at).toISOString()).toBe(new Date(routineDueAt('2026-09-15')).toISOString());
+  expect(new Date(stored.due_at).toISOString()).toBe(new Date(reason.dueAt).toISOString());
  });
  test('one client conversation covers chosen placements and leaves the third feedback item open',async()=>{
   await scoped(a.workspaceId,tx=>resetWorkspace(tx,a.workspaceId,date));

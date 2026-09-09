@@ -107,9 +107,15 @@ The manager records direction, channel, outcome, notes, selected obligations, an
 ### Rescheduled
 
 - Rescheduling requires a reason.
-- The new date must be in the future and no more than two business days away.
+- The new date must be in the future and no more than five business days away.
 - The original deadline remains unchanged and visible.
-- Immediate work cannot be hidden by rescheduling.
+- Immediate and Urgent work cannot be hidden by rescheduling.
+
+### Follow-up date assistant
+
+When eligible contact notes contain a supported date phrase, the interface offers a structured follow-up date. Supported language includes weekday names, today, tomorrow, next business day, relative calendar or business days, and explicit month-and-day dates. For example, when the operating date is Wednesday, September 9, 2026, `Monday` resolves to Monday, September 14, 2026.
+
+Resolution is deterministic and uses the server-provided Eastern operating date. It does not depend on the browser clock or a runtime language-model call. The manager must select the suggestion before it changes the outcome to Rescheduled or fills the next-contact date. The interface then shows a visible confirmation, while the server still validates the selected obligation and five-business-day limit. Saving preserves the exact notes, original deadline, and confirmed structured date. Immediate and Urgent work remains in Today even when a later contact date is recorded.
 
 ### Reached
 
@@ -211,6 +217,25 @@ The Placements area supports creation, editing, detail views, and activity histo
 
 The list uses server-side pagination with nine records per page. Search runs across the complete workspace by client, professional, or role before pagination is applied. Shared client-contact changes propagate consistently to every placement for that client.
 
+## Client operations
+
+The Clients area provides a relationship-level view across every placement connected to a company. The paginated directory can be searched by company, client contact, professional, or role. Each client card shows active placements, open issues, open follow-ups, the last recorded contact, and the highest current attention state derived from placement health.
+
+The client detail page brings together:
+
+- client contact information and relationship ownership;
+- active, scheduled, and ended placements without merging their evidence;
+- the highest current placement risk with a plain-language explanation;
+- open client obligations and their original deadlines;
+- the complete client contact history, including monthly interactions that are not attached to one placement;
+- placement-specific feedback;
+- active and closed issues;
+- senior-review status and direct links into the issue workflow.
+
+Today cards, placement details, and issue cards link back to the relevant client relationship. This keeps a completed interaction discoverable after its obligation leaves the daily queue.
+
+Organization account provisioning, role administration, record deletion, and bulk operations depend on company-specific access, retention, and audit policy. They are outside the current operational workflow.
+
 ## Persistence, concurrency, and isolation
 
 PostgreSQL is the system of record. Operational changes use database transactions so related writes either succeed together or leave no partial state.
@@ -279,7 +304,7 @@ npm run test:e2e
 npm run build
 ```
 
-The verified local release passes 83 unit tests, 26 PostgreSQL integration tests, and the complete browser workflow suite across desktop, tablet, and both phone widths. Coverage includes queue decisions and filters, pagination, search, placement persistence, contact outcomes, feedback-driven health, corrective-action cycles, automatic senior review, error recovery, session isolation, keyboard focus, touch targets, and viewport fit.
+The verified local release passes 94 unit tests, 29 PostgreSQL integration tests, and 80 browser workflow cases across desktop, tablet, 390 px phone, and 360 px phone. Coverage includes queue decisions and filters, client and placement pagination and search, complete client history, placement persistence, confirmed follow-up dates, contact outcomes, feedback-driven health, corrective-action cycles, automatic senior review, error recovery, session isolation, keyboard focus, touch targets, and viewport fit.
 
 Integration and browser suites require the dedicated test database. Missing fixtures or configuration fail clearly and are never treated as a pass.
 

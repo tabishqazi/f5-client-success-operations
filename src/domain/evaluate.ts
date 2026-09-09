@@ -85,12 +85,12 @@ export function localContactState(instant:string,zone:string):{bucket:'now'|'lat
 export interface QueueItem {
   obligationId:string;type:ObligationType;dueAt:string;scheduledAt:string;priority:Priority;reason:string;
   contactId:string;contactName:string;contactSide:ContactSide;contactEmail:string;contactZone:string;
-  clientName:string|null;professionalName:string|null;placementId:string|null;trialEnd:string|null;
+  clientId:string|null;clientName:string|null;professionalName:string|null;placementId:string|null;trialEnd:string|null;
   bucket:'now'|'later'|'upcoming';localTime:string;
 }
 export interface QueueCard {
   id:string;contactId:string;contactName:string;contactSide:ContactSide;contactEmail:string;contactZone:string;
-  clientName:string|null;professionalNames:string[];placementId:string|null;trialEnd:string|null;
+  clientId:string|null;clientName:string|null;professionalNames:string[];placementId:string|null;trialEnd:string|null;
   priority:Priority;bucket:'now'|'later'|'upcoming';localTime:string;oldestDueAt:string;nextContactAt:string|null;
   reasons:{obligationId:string;type:ObligationType;text:string;placementId:string|null;professionalName:string|null;dueAt:string}[];
 }
@@ -99,7 +99,7 @@ export function groupQueue(items:QueueItem[]):QueueCard[]{
   for(const item of items){
     const key=`${item.contactId}:${item.bucket}`;
     const current=groups.get(key);
-    if(!current){groups.set(key,{id:key,contactId:item.contactId,contactName:item.contactName,contactSide:item.contactSide,contactEmail:item.contactEmail,contactZone:item.contactZone,clientName:item.clientName,professionalNames:item.professionalName?[item.professionalName]:[],placementId:item.placementId,trialEnd:item.trialEnd,priority:item.priority,bucket:item.bucket,localTime:item.localTime,oldestDueAt:item.dueAt,nextContactAt:item.scheduledAt===item.dueAt?null:item.scheduledAt,reasons:[{obligationId:item.obligationId,type:item.type,text:item.reason,placementId:item.placementId,professionalName:item.professionalName,dueAt:item.dueAt}]});continue;}
+    if(!current){groups.set(key,{id:key,contactId:item.contactId,contactName:item.contactName,contactSide:item.contactSide,contactEmail:item.contactEmail,contactZone:item.contactZone,clientId:item.clientId,clientName:item.clientName,professionalNames:item.professionalName?[item.professionalName]:[],placementId:item.placementId,trialEnd:item.trialEnd,priority:item.priority,bucket:item.bucket,localTime:item.localTime,oldestDueAt:item.dueAt,nextContactAt:item.scheduledAt===item.dueAt?null:item.scheduledAt,reasons:[{obligationId:item.obligationId,type:item.type,text:item.reason,placementId:item.placementId,professionalName:item.professionalName,dueAt:item.dueAt}]});continue;}
     current.priority=higherPriority(current.priority,item.priority);
     if(Temporal.Instant.compare(Temporal.Instant.from(item.dueAt),Temporal.Instant.from(current.oldestDueAt))<0)current.oldestDueAt=item.dueAt;
     if(item.professionalName&&!current.professionalNames.includes(item.professionalName))current.professionalNames.push(item.professionalName);

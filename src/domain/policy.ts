@@ -8,7 +8,7 @@ export const POLICY = {
   feedback: { earlyCareCalendarDays: 90, earlyOffsets: [3, 7, 14, 28, 42, 56, 70, 84], responseBusinessDays: 2, silenceUrgentBusinessDays: 5, lowRatingMaximum: 2, clarificationRating: 3 },
   checkIns: { intervalMonths: 1, earlyCoverageCalendarDays: 7 },
   issues: { triageBusinessDays: 1, verificationBusinessDays: [3, 10], overdueEscalationBusinessDays: 2 },
-  rescheduling: { maximumBusinessDays: 2, overduePromotionBusinessDays: 5 },
+  rescheduling: { maximumBusinessDays: 5, overduePromotionBusinessDays: 5 },
   scheduling: { forwardHorizonCalendarDays: 45 },
 } as const;
 

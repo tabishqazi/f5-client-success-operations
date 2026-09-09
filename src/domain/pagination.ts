@@ -1,12 +1,15 @@
 import { DomainError } from './errors';
 
 export const PLACEMENT_PAGE_SIZE = 9;
+export const CLIENT_PAGE_SIZE = 9;
 
 export interface PlacementListQuery {
   page: number;
   pageSize: number;
   search: string;
 }
+
+export type ClientListQuery = PlacementListQuery;
 
 function positiveInteger(value: unknown, fallback: number, maximum: number): number {
   if (value === undefined || value === null || value === '') return fallback;
@@ -32,4 +35,13 @@ export function validatePlacementListQuery(value: {
     pageSize: positiveInteger(value.pageSize, PLACEMENT_PAGE_SIZE, 100),
     search,
   };
+}
+
+export function validateClientListQuery(value: {
+  page?: unknown;
+  pageSize?: unknown;
+  search?: unknown;
+}): ClientListQuery {
+  const query = validatePlacementListQuery(value);
+  return { ...query, pageSize: value.pageSize === undefined || value.pageSize === null || value.pageSize === '' ? CLIENT_PAGE_SIZE : query.pageSize };
 }

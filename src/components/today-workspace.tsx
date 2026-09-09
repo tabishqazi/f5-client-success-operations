@@ -84,6 +84,7 @@ function QueueCardView({ card, asOf, expanded, onOpen, onSaved, onCancel }: {
       <div><span>{card.nextContactAt ? "Next contact" : "Oldest deadline"}</span><strong>{displayDate(card.nextContactAt ?? card.oldestDueAt)}</strong></div>
       <div className="queue-actions">
         <button className="button button-primary" type="button" onClick={onOpen}>{expanded ? "Outcome form open" : "Record outcome"}</button>
+        {card.clientId && <Link className="text-link" href={`/clients/${card.clientId}`}>View client</Link>}
         {card.placementId && <Link className="text-link" href={`/placements/${card.placementId}`}>Review placement</Link>}
       </div>
     </div>

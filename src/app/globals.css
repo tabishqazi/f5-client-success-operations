@@ -477,6 +477,43 @@ input:focus-visible,select:focus-visible,textarea:focus-visible { outline:3px so
 .issue-actions { margin-top:15px; }
 .issue-command-form { margin-top:16px; padding-top:17px; }
 .action-history { margin-top:15px; padding-top:13px; }
+.issue-links { display:flex; flex-wrap:wrap; gap:4px 16px; }
+
+.client-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+.client-card { display:flex; flex-direction:column; min-width:0; min-height:246px; padding:18px; background:var(--surface); border:1px solid var(--line); border-radius:12px; box-shadow:0 1px 2px rgba(30,30,30,.035),0 8px 26px rgba(30,30,30,.025); }
+.client-card:hover { border-color:#91bca1; box-shadow:0 8px 24px rgba(30,30,30,.06); }
+.client-card h2 { margin-top:2px; font-size:1.1rem; }
+.company-initials { border-radius:10px; }
+.client-contact-line { min-height:42px; margin-top:5px; color:var(--muted); font-size:.82rem; overflow-wrap:anywhere; }
+.client-metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:5px; margin:14px 0 10px; padding:10px 0; border-block:1px solid var(--line); }
+.client-metrics>div { display:grid; min-width:0; }
+.client-metrics strong { font-size:1.05rem; }
+.client-metrics span { color:var(--muted); font-size:.68rem; line-height:1.25; }
+.client-card-note { color:var(--muted); font-size:.77rem; }
+.client-card .card-link { margin-top:auto; padding-top:10px; }
+.health-inactive { background:#f0f2ee; color:#59635b; }
+.client-heading .health-badge { flex:0 0 auto; }
+.client-summary { grid-template-columns:repeat(4,minmax(0,1fr)); }
+.client-overview { align-items:stretch; }
+.client-contact { display:grid; gap:2px; padding:9px 0; border-top:1px solid var(--line); font-size:.875rem; }
+.client-contact:first-of-type { border-top:0; padding-top:0; }
+.client-contact a { color:var(--green-deep); overflow-wrap:anywhere; }
+.client-contact span { color:var(--muted); }
+.client-placement-list { display:grid; }
+.client-placement-row { display:flex; align-items:center; justify-content:space-between; gap:18px; padding:13px 0; border-top:1px solid var(--line); }
+.client-placement-row:first-child { border-top:0; padding-top:0; }
+.client-placement-row>div:first-child { display:grid; min-width:0; }
+.client-placement-row>div:first-child span { color:var(--muted); font-size:.82rem; }
+.client-placement-state { display:flex; align-items:center; justify-content:flex-end; flex-wrap:wrap; gap:7px; }
+.history-entry { display:grid; grid-template-columns:145px minmax(0,1fr); gap:16px; padding:14px 0; border-top:1px solid var(--line); }
+.history-entry:first-of-type { border-top:0; padding-top:0; }
+.history-entry p { margin-top:4px; }
+.history-meta { display:flex; flex-direction:column; align-items:flex-start; gap:6px; color:var(--muted); font-size:.8rem; }
+
+.date-suggestion { display:flex; align-items:center; justify-content:space-between; gap:14px; margin-top:8px; padding:12px 13px; border:1px solid #bfe8ce; border-radius:9px; background:var(--green-soft); }
+.date-suggestion p { color:#31523e; font-size:.8rem; }
+.date-suggestion-warning { border-color:#eadbb6; background:#fff8e8; }
+.suggestion-confirmed { color:#075f37; font-size:.82rem; font-weight:700; }
 
 .priority-grid { gap:11px; }
 .priority-card { padding:15px 16px; border-radius:11px; }
@@ -493,6 +530,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible { outline:3px so
   .app-shell { grid-template-columns:200px minmax(0,1fr); }
   .brand-logo { width:166px; }
   .main-content { padding:27px 26px 38px; }
+  .client-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .topbar,.workspace-footer { padding-inline:26px; }
 }
 
@@ -534,6 +572,15 @@ input:focus-visible,select:focus-visible,textarea:focus-visible { outline:3px so
   .queue-card-foot { align-items:stretch; }
   .queue-actions { gap:3px; }
   .placement-grid { gap:11px; }
+  .client-grid { grid-template-columns:1fr; gap:11px; }
+  .client-card { min-height:0; padding:15px; }
+  .client-summary { grid-template-columns:repeat(4,minmax(0,1fr)); }
+  .client-placement-row { align-items:flex-start; flex-direction:column; gap:9px; }
+  .client-placement-state { justify-content:flex-start; }
+  .history-entry { grid-template-columns:1fr; gap:8px; }
+  .history-meta { flex-direction:row; align-items:center; justify-content:space-between; }
+  .date-suggestion { align-items:stretch; flex-direction:column; }
+  .date-suggestion .button { width:100%; }
   .placement-card { padding:15px; }
   .issue-card,.issue-form { padding:16px; }
   .issue-detail-block,.senior-review { padding:12px; }

@@ -1,6 +1,7 @@
-type IconName = "today" | "people" | "issue" | "rules" | "arrow" | "clock" | "check";
+type IconName = "today" | "clients" | "people" | "issue" | "rules" | "arrow" | "clock" | "check";
 const paths: Record<IconName, React.ReactNode> = {
   today: <><rect x="4" y="5" width="16" height="16" rx="3" /><path d="M8 3v4m8-4v4M4 11h16m-11 5 2 2 4-4" /></>,
+  clients: <><path d="M4 21v-8h16v8M7 13V7l5-4 5 4v6" /><path d="M9 21v-5h6v5" /></>,
   people: <><circle cx="9" cy="8" r="3" /><path d="M3 21v-3a6 6 0 0 1 12 0v3m1-16a3 3 0 0 1 0 6m2 4a5 5 0 0 1 3 5" /></>,
   issue: <><path d="m10 4-8 14a2 2 0 0 0 2 3h16a2 2 0 0 0 2-3L14 4a2.3 2.3 0 0 0-4 0Z" /><path d="M12 9v5m0 3v.1" /></>,
   rules: <><path d="M5 4h14v17l-7-3-7 3V4Z" /><path d="M9 8h6m-6 4h6" /></>,
