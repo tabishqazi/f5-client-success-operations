@@ -13,7 +13,10 @@ try {
   await admin.begin(async (tx) => {
     await tx`select pg_advisory_xact_lock(75261007)`;
     await tx.unsafe("do $$ begin if not exists (select 1 from pg_roles where rolname='f5_app') then create role f5_app login; end if; end $$");
-    await tx`alter role f5_app password ${runtimePassword}`;
+    const [{ command }] = await tx`
+      select format('alter role f5_app password %L', ${runtimePassword}::text) as command
+    `;
+    await tx.unsafe(command);
   });
 } finally {
   await admin.end();
