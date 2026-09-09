@@ -1,0 +1,19 @@
+name: f5-client-success
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: f5_owner
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run npm run db:setup first}
+      POSTGRES_DB: f5_operations
+    ports:
+      - "127.0.0.1:55439:5432"
+    volumes:
+      - f5_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U f5_owner -d f5_operations"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+volumes:
+  f5_data:
