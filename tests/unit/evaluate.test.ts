@@ -35,7 +35,7 @@ test('grouping retains every obligation and uses the highest priority',()=>{
 });
 
 test('contact availability uses the contact zone',()=>{
- expect(localContactState('2026-09-08T14:00:00Z','America/New_York').bucket).toBe('now');
+ expect(localContactState('2026-09-08T14:00:00Z','America/New_York')).toEqual({bucket:'now',localTime:'Tue, Sep 8, 2026 · 10:00 AM'});
  expect(localContactState('2026-09-08T10:00:00Z','America/New_York').bucket).toBe('later');
  expect(localContactState('2026-09-12T14:00:00Z','America/New_York').bucket).toBe('upcoming');
 });

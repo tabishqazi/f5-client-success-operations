@@ -76,7 +76,9 @@ export function evaluateObligation(fact:QueueFact):PriorityReason {
 
 export function localContactState(instant:string,zone:string):{bucket:'now'|'later'|'upcoming';localTime:string} {
   const zoned=Temporal.Instant.from(instant).toZonedDateTimeISO(zone);
-  const localTime=zoned.toLocaleString('en-US',{weekday:'short',hour:'numeric',minute:'2-digit',hour12:true});
+  const localDate=zoned.toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+  const localClock=zoned.toLocaleString('en-US',{hour:'numeric',minute:'2-digit',hour12:true});
+  const localTime=`${localDate} · ${localClock}`;
   if(zoned.dayOfWeek<=5&&zoned.hour>=9&&zoned.hour<17)return {bucket:'now',localTime};
   if(zoned.dayOfWeek<=5&&zoned.hour<9)return {bucket:'later',localTime};
   return {bucket:'upcoming',localTime};
