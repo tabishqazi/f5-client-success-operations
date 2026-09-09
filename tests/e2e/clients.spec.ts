@@ -55,3 +55,26 @@ test('date language becomes a confirmed structured follow-up', async ({ page }) 
   await page.reload();
   await expect(page.getByText(`Next contact is scheduled for ${selectedDate}.`, { exact: false })).toBeVisible();
 });
+
+test('a placement issue link opens only the referenced workflow', async ({ page }) => {
+  await page.goto('/');
+  const immediate = page.locator('.queue-card').filter({ hasText: 'IMMEDIATE' }).first();
+  await expect(immediate).toBeVisible();
+  await immediate.getByRole('link', { name: 'Review placement' }).click();
+
+  const issues = page.locator('section').filter({
+    has: page.getByRole('heading', { name: 'Issues', exact: true }),
+  });
+  const issue = issues.locator('.timeline-entry').first();
+  const description = await issue.locator('p').first().innerText();
+  await issue.getByRole('link', { name: 'Manage issue' }).click();
+
+  await expect(page).toHaveURL(/\/issues\?issue=/);
+  await expect(page.getByText('Showing the selected issue and its current recovery workflow.', { exact: true })).toBeVisible();
+  await expect(page.locator('.issue-card')).toHaveCount(1);
+  await expect(page.locator('.issue-card').getByRole('heading', { name: description, exact: true })).toBeVisible();
+
+  await page.getByRole('link', { name: 'View all issues' }).click();
+  await expect(page).toHaveURL(/\/issues$/);
+  await expect(page.locator('.issue-card').nth(1)).toBeVisible();
+});

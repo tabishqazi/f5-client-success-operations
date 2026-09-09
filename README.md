@@ -2,6 +2,8 @@
 
 A responsive operations workspace for managing client satisfaction and professional performance across active placements. The opening screen answers the manager's daily question: **Who needs a call today, and why?**
 
+**Live application:** [f5-client-success-operations.vercel.app](https://f5-client-success-operations.vercel.app)
+
 ## What the application does
 
 The application converts placement dates, contact schedules, client feedback, open issues, corrective actions, verification windows, and senior reviews into one prioritized daily queue. The manager does not need to reconstruct the day from inboxes or remember which follow-up should happen next.
@@ -230,7 +232,7 @@ The client detail page brings together:
 - the complete client contact history, including monthly interactions that are not attached to one placement;
 - placement-specific feedback;
 - active and closed issues;
-- senior-review status and direct links into the issue workflow.
+- senior-review status and direct links into a focused issue workflow.
 
 Today cards, placement details, and issue cards link back to the relevant client relationship. This keeps a completed interaction discoverable after its obligation leaves the daily queue.
 
