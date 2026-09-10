@@ -236,7 +236,9 @@ The client detail page brings together:
 
 Today cards, placement details, and issue cards link back to the relevant client relationship. This keeps a completed interaction discoverable after its obligation leaves the daily queue.
 
-Organization account provisioning, role administration, record deletion, and bulk operations depend on company-specific access, retention, and audit policy. They are outside the current operational workflow.
+## Product boundaries
+
+Authentication and administration are intentional boundaries for this release. The application uses isolated, secure, server-issued workspace sessions so the operating workflows are immediately accessible. In an organization rollout, those sessions would connect to the company's identity provider and role model. Account provisioning, role administration, record deletion, and bulk operations depend on company-specific access, retention, and audit policies. They have deliberately not been represented by a fixed client-side password that would not provide real access control.
 
 ## Persistence, concurrency, and isolation
 
