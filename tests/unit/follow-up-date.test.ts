@@ -10,6 +10,18 @@ describe('follow-up date suggestions', () => {
     });
   });
 
+  test('resolves an explicitly next weekday within the following calendar week', () => {
+    expect(suggestFollowUpDate('The client will connect with us next Thursday.', asOf)).toEqual({
+      date: '2026-09-17', phrase: 'next thursday', withinAllowedWindow: false,
+    });
+    expect(suggestFollowUpDate('The client will connect with us next Monday.', asOf)).toEqual({
+      date: '2026-09-14', phrase: 'next monday', withinAllowedWindow: true,
+    });
+    expect(suggestFollowUpDate('The client will connect with us next Thursday.', '2026-09-10')).toEqual({
+      date: '2026-09-17', phrase: 'next thursday', withinAllowedWindow: true,
+    });
+  });
+
   test.each([
     ['Please call tomorrow.', '2026-09-10'],
     ['Try again next business day.', '2026-09-10'],

@@ -62,12 +62,15 @@ export function suggestFollowUpDate(notes: string, asOf: string): FollowUpDateSu
   const today = text.match(/\btoday\b/);
   if (today) return result(asOf, today[0], asOf);
 
-  const weekday = text.match(/\b(?:next\s+)?(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/);
+  const weekday = text.match(/\b(next\s+)?(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/);
   if (weekday) {
     const base = parseDate(asOf);
-    const target = weekdays[weekday[1]!]!;
-    let days = (target - base.dayOfWeek + 7) % 7;
-    if (days === 0) days = 7;
+    const target = weekdays[weekday[2]!]!;
+    const explicitlyNext = Boolean(weekday[1]);
+    let days = explicitlyNext
+      ? (8 - base.dayOfWeek) + (target - 1)
+      : (target - base.dayOfWeek + 7) % 7;
+    if (!explicitlyNext && days === 0) days = 7;
     return result(base.add({ days }).toString(), weekday[0], asOf);
   }
 

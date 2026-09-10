@@ -115,7 +115,7 @@ The manager records direction, channel, outcome, notes, selected obligations, an
 
 ### Follow-up date assistant
 
-When eligible contact notes contain a supported date phrase, the interface offers a structured follow-up date. Supported language includes weekday names, today, tomorrow, next business day, relative calendar or business days, and explicit month-and-day dates. For example, when the operating date is Wednesday, September 9, 2026, `Monday` resolves to Monday, September 14, 2026.
+When eligible contact notes contain a supported date phrase, the interface offers a structured follow-up date. Supported language includes weekday names, today, tomorrow, next business day, relative calendar or business days, and explicit month-and-day dates. A bare weekday means its nearest future occurrence, while `next` followed by a weekday means that day in the following Monday-to-Sunday week. For example, from Wednesday, September 9, 2026, `Monday` resolves to September 14 and `next Thursday` resolves to September 17.
 
 Resolution is deterministic and uses the server-provided Eastern operating date. It does not depend on the browser clock or a runtime language-model call. The manager must select the suggestion before it changes the outcome to Rescheduled or fills the next-contact date. The interface then shows a visible confirmation, while the server still validates the selected obligation and five-business-day limit. Saving preserves the exact notes, original deadline, and confirmed structured date. Immediate and Urgent work remains in Today even when a later contact date is recorded.
 
