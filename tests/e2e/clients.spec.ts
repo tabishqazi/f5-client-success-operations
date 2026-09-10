@@ -56,6 +56,20 @@ test('date language becomes a confirmed structured follow-up', async ({ page }) 
   await expect(page.getByText(`Next contact is scheduled for ${selectedDate}.`, { exact: false })).toBeVisible();
 });
 
+test('date language is explained when an issue workflow owns the next action', async ({ page }) => {
+  await page.goto('/');
+  const card = page.locator('.queue-card').filter({ hasText: 'The reported issue threatens the client relationship' }).first();
+  await expect(card).toBeVisible();
+  await card.getByRole('button', { name: 'Record outcome' }).click();
+  const form = card.locator('form');
+  await form.getByLabel('Conversation notes').fill('Client asked us to reconnect next Thursday.');
+  const suggestion = form.locator('.date-suggestion');
+  await expect(suggestion).toContainText('Follow-up date recognized');
+  await expect(suggestion).toContainText('Sep 17, 2026');
+  await expect(suggestion).toContainText('Use Manage issue to schedule it.');
+  await expect(suggestion.getByRole('button', { name: /^Use / })).toHaveCount(0);
+});
+
 test('a placement issue link opens only the referenced workflow', async ({ page }) => {
   await page.goto('/');
   const immediate = page.locator('.queue-card').filter({ hasText: 'IMMEDIATE' }).first();
