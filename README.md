@@ -308,7 +308,7 @@ npm run test:e2e
 npm run build
 ```
 
-The verified local release passes 94 unit tests, 29 PostgreSQL integration tests, and 80 browser workflow cases across desktop, tablet, 390 px phone, and 360 px phone. Coverage includes queue decisions and filters, client and placement pagination and search, complete client history, placement persistence, confirmed follow-up dates, contact outcomes, feedback-driven health, corrective-action cycles, automatic senior review, error recovery, session isolation, keyboard focus, touch targets, and viewport fit.
+The verified local release passes 95 unit tests, 29 PostgreSQL integration tests, and 80 browser workflow cases across desktop, tablet, 390 px phone, and 360 px phone. Coverage includes queue decisions and filters, client and placement pagination and search, complete client history, placement persistence, confirmed follow-up dates, contact outcomes, feedback-driven health, corrective-action cycles, automatic senior review, error recovery, session isolation, keyboard focus, touch targets, and viewport fit.
 
 Integration and browser suites require the dedicated test database. Missing fixtures or configuration fail clearly and are never treated as a pass.
 
